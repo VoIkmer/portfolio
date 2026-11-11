@@ -83,8 +83,8 @@ const PROJECTS = [
   }
 ];
 
-// New project added: FaceGuard
-PROJECTS.push({
+// FaceGuard — featured (2nd place, 2026 IEEE SSCS Arduino Contest), so it is listed first
+PROJECTS.unshift({
   id: 'p7',
   num: '007',
   title: 'FaceGuard — Smart Lock with Facial Recognition',
@@ -99,34 +99,80 @@ PROJECTS.push({
   results: 'Successfully delivered a fully working prototype capable of real-time facial recognition, local user enrollment, activity logging, and seamless remote unlocking via the integrated local network dashboard.'
 });
 
-const TIMELINE = [
+PROJECTS.push({
+  id: 'p8',
+  title: 'Non-Linear DC Motor Simulation',
+  repo: 'https://github.com/VoIkmer/Non-Linear_DC_Motor_Simulation',
+  desc: 'Modeling, linearization and PID control of a DC motor driving a fan with a non-linear aerodynamic load, plus sampling and aliasing analysis.',
+  tags: ['Python', 'Control Systems', 'Jupyter', 'Simulation'],
+  metrics: [{ val: 'PID', label: 'Pole Placement' }, { val: 'Linearized', label: 'Operating Point' }, { val: 'ZOH', label: 'Sampling' }],
+  overview: 'A Jupyter-based study of a DC motor with a non-linear aerodynamic (fan) load: from the physical model to a linearized plant, controller design and discrete-time effects.',
+  problem: 'The fan load torque grows with the square of the speed, so the motor is not a linear system. Classical control tools only apply after linearizing around a well-defined operating point.',
+  architecture: 'The armature and mechanical equations are solved for the steady-state operating point, linearized into a state-space model and converted to a transfer function. PID gains are then obtained by pole placement, and controllers (P, PI, PD, PID) are compared. The notebook closes with zero-order-hold reconstruction and aliasing illustrations. Reusable helpers live in a Python module built on the python-control library.',
+  archShort: 'Linearize & Control',
+  results: 'Step, ramp and parabola responses, a P/PI/PD/PID comparison, ZOH reconstruction and an aliasing illustration, all reproducible from the notebook and saved as figures in the repository.'
+});
+
+/* Education timeline — newest / ongoing first */
+const EDUCATION = [
+  {
+    year: '2022 – Present',
+    title: 'Bachelor of Electrical Engineering',
+    desc: 'Federal University of Bahia (UFBA). Deepened calculus, physics, programming fundamentals, circuit theory, signal processing, and control systems.',
+    accent: true
+  },
+  {
+    year: '2025.2 – 2026.1',
+    title: 'English — CCAA Master Level',
+    desc: 'Completed the Master level of the CCAA English program over two semesters, consolidating advanced fluency for academic and professional settings.',
+    accent: false
+  },
+];
+
+/* Work timeline — newest / ongoing first */
+const WORK = [
+  {
+    year: '2026 – Present',
+    title: 'Intern — Network Methodology (Neoenergia)',
+    desc: 'Internship at Neoenergia focused on network methodology, data collection and analysis for grid projects.',
+    accent: true
+  },
+  {
+    year: '2024 – 2026',
+    title: 'Student Representation & Project Lead',
+    desc: 'Elected Student Representative at the College of Electrical Engineering; represented student interests and coordinated institutional initiatives. Appointed project lead at Onda Elétrica, organizing technical teams and roadmaps.',
+    accent: false
+  },
   {
     year: '2021 – 2024',
     title: 'Teaching & Problem Solving',
     desc: 'Instructor at Cursos Discipulus and MSL — taught mathematics and physics problem-solving to strengthen analytical foundations.',
     accent: false
   },
+];
+
+/* Awards — highlighted cards shown above the certificates.
+   Optional `result` (e.g. placement) is shown as a pill when filled in. */
+const AWARDS = [
   {
-    year: '2024 - 2026',
-    title: 'Student Representation & Project Lead',
-    desc: 'Elected Student Representative at the College of Electrical Engineering; represented student interests and coordinated institutional initiatives. Appointed project lead at Onda Elétrica, organizing technical teams and roadmaps.',
-    accent: false
-  },
-  {
-    year: '2026 - Present',
-    title: 'Intern — Network Methodology (Neoenergia)',
-    desc: 'Internship at Neoenergia focused on network methodology, data collection and analysis for grid projects.',
-    accent: true
-  },
-  {
-    year: '2022 - Present',
-    title: 'Bachelor of Electrical Engineering',
-    desc: 'Admitted to Federal University of Bahia (UFBA). Deepened calculus, physics, programming fundamentals, circuit theory, signal processing, and control systems.',
-    accent: true
+    issuer: 'IEEE SSCS · WPI',
+    title: '2026 IEEE SSCS Arduino Contest',
+    date: 'Nov 2026',
+    result: '2nd Place',
+    project: 'FaceGuard',
+    url: 'https://arduino-contest.sscs.ieee.org/winners',
+    notes: 'Second place in the contest promoted by the IEEE Solid-State Circuits Society, with FaceGuard — a smart lock with on-device facial recognition built on the ESP32-S3.'
   },
 ];
 
+/* Certificates — newest first */
 const CERTIFICATIONS = [
+  {
+    issuer: 'IEEE SSCS · WPI',
+    title: 'Participation in the 2026 IEEE SSCS Arduino Contest',
+    date: 'Aug 2026',
+    notes: 'Participation certificate in the contest promoted by the IEEE Solid-State Circuits Society. Hands-on work in microcontroller programming (Arduino, ESP32).'
+  },
   {
     issuer: 'FM2S',
     title: 'Lean Six Sigma White Belt',
@@ -475,6 +521,21 @@ function renderProjectDiagram(p, context = 'card') {
     return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">${_arrowDefs(p.id)}${_panel(4, 30, 82, 108, 'INPUT', ['ESP32 Camera', 'MJPEG'], 'input')}${_panel(109, 30, 82, 108, 'SYSTEM', [p.archShort || 'Edge AI'], 'system')}${_panel(214, 30, 82, 108, 'OUTPUT', ['Unlock', 'Logs'], 'output')}${_arrow(86, 84, 106, p.id + 'a')}${_arrow(191, 84, 211, p.id + 'b')}</svg>`;
   }
 
+  /* ── Non-Linear DC Motor Simulation ───────────────────────── */
+  if (p.id === 'p8') {
+    if (isModal) {
+      return `
+        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">
+          ${_arrowDefs(p.id)}
+          ${_panel(12, 28, 148, 144, 'INPUT', ['DC Motor + Fan', '─────────────', 'Ra, La, Km, J, Bm', 'Load torque k·ω²', 'Armature voltage Va'], 'input')}
+          ${_panel(196, 28, 168, 144, 'SYSTEM', [p.archShort || 'Linearize & Control', '─────────────', 'Operating point ω0', 'State-space / TF', 'PID pole placement'], 'system')}
+          ${_panel(400, 28, 148, 144, 'OUTPUT', ['Responses', '─────────────', 'Step / ramp / parab.', 'P, PI, PD, PID compare', 'ZOH & aliasing'], 'output')}
+          ${_arrow(160, 100, 193, p.id + 'a')} ${_arrow(364, 100, 397, p.id + 'b')}
+        </svg>`;
+    }
+    return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">${_arrowDefs(p.id)}${_panel(4, 30, 82, 108, 'INPUT', ['DC Motor', 'Fan load k·ω²'], 'input')}${_panel(109, 30, 82, 108, 'SYSTEM', ['Linearization', 'PID design'], 'system')}${_panel(214, 30, 82, 108, 'OUTPUT', ['Step response', 'ZOH / aliasing'], 'output')}${_arrow(86, 84, 106, p.id + 'a')}${_arrow(191, 84, 211, p.id + 'b')}</svg>`;
+  }
+
   // Default placeholder to avoid printing 'undefined' when no diagram exists
   return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:0.001;display:block"></svg>`;
 }
@@ -486,6 +547,7 @@ function renderProjectDiagram(p, context = 'card') {
   const container = document.getElementById('projects-list');
 
   PROJECTS.forEach((p, i) => {
+    p.num = String(i + 1).padStart(3, '0'); // numbering follows display order
     const card = document.createElement('div');
     card.className = 'project-card reveal' + (i > 0 ? ' reveal-delay-' + (i % 3) : '');
     
@@ -644,21 +706,26 @@ document.getElementById('modal-overlay').addEventListener('click', function (e) 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 /* ═══════════════════════════════════════
-   RENDER TIMELINE
+   RENDER TIMELINES (education + work)
 ═══════════════════════════════════════ */
 (function () {
-  const tl = document.getElementById('timeline-list');
+  function renderTimeline(containerId, items) {
+    const tl = document.getElementById(containerId);
+    if (!tl) return;
+    items.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'timeline-item';
+      div.innerHTML = `
+        <div class="timeline-dot${item.accent ? ' accent' : ''}"></div>
+        <div class="timeline-year">${item.year}</div>
+        <div class="timeline-title">${item.title}</div>
+        <div class="timeline-desc">${item.desc}</div>`;
+      tl.appendChild(div);
+    });
+  }
 
-  TIMELINE.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'timeline-item';
-    div.innerHTML = `
-      <div class="timeline-dot${item.accent ? ' accent' : ''}"></div>
-      <div class="timeline-year">${item.year}</div>
-      <div class="timeline-title">${item.title}</div>
-      <div class="timeline-desc">${item.desc}</div>`;
-    tl.appendChild(div);
-  });
+  renderTimeline('education-list', EDUCATION);
+  renderTimeline('work-list', WORK);
 
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
@@ -667,11 +734,37 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 })();
 
 /* ═══════════════════════════════════════
-   RENDER CERTIFICATIONS
+   RENDER AWARDS & CERTIFICATIONS
 ═══════════════════════════════════════ */
 (function () {
-  const grid = document.getElementById('cert-grid');
+  const awardList = document.getElementById('award-list');
+  AWARDS.forEach(a => {
+    const card = document.createElement('div');
+    card.className = 'award-card visible';
+    card.innerHTML = `
+      <div class="award-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="9" r="5"/>
+          <path d="M8.5 13.2L7 21l5-3 5 3-1.5-7.8"/>
+        </svg>
+      </div>
+      <div class="award-body">
+        <div class="award-top">
+          <span class="blog-cat">${a.issuer}</span>
+          <span class="award-pill">Award</span>
+          ${a.result ? `<span class="award-pill award-pill-result">${a.result}</span>` : ''}
+        </div>
+        <div class="award-title">${a.title}</div>
+        <div class="blog-excerpt">${a.notes || ''}</div>
+        <div class="award-foot">
+          <div class="blog-meta">${a.date}</div>
+          ${a.url ? `<a class="award-link" href="${a.url}" target="_blank" rel="noopener">Official winners page ↗</a>` : ''}
+        </div>
+      </div>`;
+    awardList.appendChild(card);
+  });
 
+  const grid = document.getElementById('cert-grid');
   CERTIFICATIONS.forEach((cert, i) => {
     const card = document.createElement('div');
     card.className = 'blog-card' + (i > 1 ? ` reveal-delay-${(i % 2) + 1}` : '');
