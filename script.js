@@ -1,780 +1,640 @@
-/* ═══════════════════════════════════════
-   DATA
-═══════════════════════════════════════ */
+/* Content lives in data.js (loaded first). */
 
-const PROJECTS = [
-  {
-    id: 'p1',
-    num: '001',
-    title: 'Battery Management System (BMS)',
-    repo: 'https://github.com/VoIkmer/BMS-SoC-Estimator',
-    desc: 'EKF-based State of Charge (SoC) estimator for Li-Ion cells, enabling predictive monitoring and intelligent battery analytics.',
-    tags: ['MATLAB', 'Python', 'BMS', 'Kalman Filter'],
-    metrics: [{ val: 'Li-Ion', label: 'Chemistry' }, { val: 'High', label: 'Accuracy' }, { val: 'Predictive', label: 'Analysis' }],
-    overview: 'A solution for precise State of Charge estimation, critical for electric vehicles and smart grids where measurement error has high cost.',
-    problem: 'Direct SoC measurement is not possible in operation; traditional Coulomb counting accumulates drift over time.',
-    architecture: 'State-space equivalent-circuit model implemented in MATLAB and Python. Measurements of voltage and current feed an Extended Kalman Filter (EKF) to correct estimates continuously.',
-    results: 'Successful analytical validation with fast convergence to true SoC, ready for integration with monitoring hardware.'
-  },
-  {
-    id: 'p2',
-    num: '002',
-    title: 'Signal Analyzer',
-    repo: 'https://github.com/VoIkmer/Signal-Analyzer',
-    desc: 'Digital signal processing system for harmonic reconstruction and spectral analysis with automated error metrics.',
-    tags: ['MATLAB', 'DSP', 'Fourier', 'Signals'],
-    metrics: [{ val: 'Spectral', label: 'Analysis' }, { val: 'Dynamic', label: 'Error Metrics' }, { val: 'Visual', label: 'Reconstruction' }],
-    overview: 'Processing and reconstructing complex waveforms from harmonic components to support telecom and power-control analysis.',
-    problem: 'Visualize and quantify how truncating the harmonic series affects distortion in the reconstructed signal.',
-    architecture: 'MATLAB code decomposing waveforms, computing Fourier coefficients and plotting interactive series and spectrum visualizations.',
-    results: 'Accurate visualization of Gibbs phenomenon and automated mean-square error calculations for validation.'
-  },
-  {
-    id: 'p3',
-    num: '003',
-    title: 'RC Circuit Simulation',
-    repo: 'https://github.com/VoIkmer/RC-Circuit-Simulation',
-    desc: 'Simulator for dynamic analysis of RC circuits with automated time-constant calculations and temporal validation.',
-    tags: ['MATLAB', 'Python', 'RC Circuits', 'Simscape'],
-    metrics: [{ val: 'RC', label: 'Topology' }, { val: 'Temporal', label: 'Response' }, { val: 'Automatic', label: 'Calculation' }],
-    overview: 'A computational tool to predict dynamic behavior of circuits under step inputs, useful for stability analysis and filter design.',
-    problem: 'Manual analysis of first-order circuits is error-prone and hard to visualize quickly.',
-    architecture: 'Algorithm computes initial and final conditions, determines Thevenin equivalent resistance and plots complete charge/discharge curves from analytical solutions.',
-    results: 'Instant generation of voltage/current curves with analytical confirmation of time-constant via robust scripts.'
-  },
-  {
-    id: 'p4',
-    num: '004',
-    title: 'Resistor Color Reader',
-    repo: 'https://github.com/VoIkmer/Resistor-Color-Reader',
-    desc: 'MATLAB-based tool to calculate electrical resistance from color bands. Supports 4 and 5-band resistors with graphical visualization.',
-    tags: ['MATLAB', 'Electronics', 'Calculator'],
-    metrics: [{ val: '4 & 5', label: 'Bands' }, { val: 'Visual', label: 'GUI' }, { val: 'EIA-96', label: 'Standard' }],
-    overview: 'A computational tool designed to quickly and accurately decode standard resistor color bands into resistance values and tolerances.',
-    problem: 'Reading multi-band resistors manually in laboratory settings is often slow and prone to misinterpretation.',
-    architecture: 'MATLAB script mapping color strings to numerical values, computing multipliers, and plotting a representative 2D graphical resistor.',
-    results: 'Open-source utility available for engineering students to validate their physical components instantly.'
-  },
-  {
-    id: 'p5',
-    num: '005',
-    title: 'Light Alert System',
-    repo: 'https://github.com/VoIkmer/Light-Alert-System',
-    desc: 'Light intensity monitoring system using an LDR sensor, I2C LCD display, and buzzer alarm.',
-    tags: ['C++', 'Arduino', 'Embedded', 'Sensors'],
-    metrics: [{ val: 'LDR', label: 'Sensing' }, { val: 'I2C', label: 'Display' }, { val: 'PWM', label: 'Alert' }],
-    overview: 'Project developed as a practical activity for the probationary period at the Onda Elétrica student entity.',
-    problem: 'Need for a local, real-time alert mechanism triggered by specific environmental lighting conditions.',
-    architecture: 'C++ firmware reading analog ADC values from an LDR, filtering noise, and commanding an I2C LCD and piezo buzzer based on predefined thresholds.',
-    results: 'Functional hardware prototype validating embedded programming logic and physical hardware integration.'
-  },
-  {
-    id: 'p6',
-    num: '006',
-    title: 'GridSense (WIP)',
-    repo: 'https://github.com/VoIkmer/GridSense',
-    desc: 'Work in progress: Data-driven sensing and analysis tool built with Python for smart grid applications.',
-    tags: ['Python', 'Smart Grids', 'Data Engineering'],
-    metrics: [{ val: 'WIP', label: 'Status' }, { val: 'Data', label: 'Pipeline' }, { val: 'Grid', label: 'Domain' }],
-    overview: 'An ongoing initiative to process and extract insights from electrical grid data streams using Python analytics.',
-    problem: 'Modern smart grids generate vast amounts of telemetry that require automated pipelines to identify trends and anomalies.',
-    architecture: 'Python-based ingestion pipeline utilizing Pandas for data cleaning and preliminary statistical modeling.',
-    results: 'Under active development. Core data structures and initial EDA (Exploratory Data Analysis) modules are being established.'
-  }
-];
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// FaceGuard — featured (2nd place, 2026 IEEE SSCS Arduino Contest), so it is listed first
-PROJECTS.unshift({
-  id: 'p7',
-  num: '007',
-  title: 'FaceGuard — Smart Lock with Facial Recognition',
-  repo: 'https://github.com/VoIkmer/FaceGuard',
-  desc: 'Facial-recognition based smart lock using ESP32-S3 with a web dashboard for monitoring and remote control.',
-  tags: ['ESP32-S3', 'C++', 'Embedded', 'Dashboard'],
-  metrics: [{ val: 'ESP32-S3', label: 'Platform' }, { val: 'Complete', label: 'System' }, { val: 'Open', label: 'Source' }],
-  overview: 'Embedded firmware developed for face detection and recognition using the ESP32-S3 microcontroller. The system features a local web dashboard for real-time video streaming and remote smart lock control.',
-  problem: 'Designing a secure, locally-processed facial access control system that maintains a low false-positive rate while operating entirely on constrained embedded hardware, eliminating the need for cloud processing.',
-  architecture: 'An ESP32-S3 camera server (MJPEG streaming) combined with an on-device facial recognition pipeline (Edge AI). This embedded backend is integrated with a responsive web dashboard (HTML/CSS/JS) for remote unlocking, user enrollment, and access log management.',
-  archShort: 'Edge AI & Local Server',
-  results: 'Successfully delivered a fully working prototype capable of real-time facial recognition, local user enrollment, activity logging, and seamless remote unlocking via the integrated local network dashboard.'
-});
-
-PROJECTS.push({
-  id: 'p8',
-  title: 'Non-Linear DC Motor Simulation',
-  repo: 'https://github.com/VoIkmer/Non-Linear_DC_Motor_Simulation',
-  desc: 'Modeling, linearization and PID control of a DC motor driving a fan with a non-linear aerodynamic load, plus sampling and aliasing analysis.',
-  tags: ['Python', 'Control Systems', 'Jupyter', 'Simulation'],
-  metrics: [{ val: 'PID', label: 'Pole Placement' }, { val: 'Linearized', label: 'Operating Point' }, { val: 'ZOH', label: 'Sampling' }],
-  overview: 'A Jupyter-based study of a DC motor with a non-linear aerodynamic (fan) load: from the physical model to a linearized plant, controller design and discrete-time effects.',
-  problem: 'The fan load torque grows with the square of the speed, so the motor is not a linear system. Classical control tools only apply after linearizing around a well-defined operating point.',
-  architecture: 'The armature and mechanical equations are solved for the steady-state operating point, linearized into a state-space model and converted to a transfer function. PID gains are then obtained by pole placement, and controllers (P, PI, PD, PID) are compared. The notebook closes with zero-order-hold reconstruction and aliasing illustrations. Reusable helpers live in a Python module built on the python-control library.',
-  archShort: 'Linearize & Control',
-  results: 'Step, ramp and parabola responses, a P/PI/PD/PID comparison, ZOH reconstruction and an aliasing illustration, all reproducible from the notebook and saved as figures in the repository.'
-});
-
-/* Education timeline — newest / ongoing first */
-const EDUCATION = [
-  {
-    year: '2022 – Present',
-    title: 'Bachelor of Electrical Engineering',
-    desc: 'Federal University of Bahia (UFBA). Deepened calculus, physics, programming fundamentals, circuit theory, signal processing, and control systems.',
-    accent: true
-  },
-  {
-    year: '2025.2 – 2026.1',
-    title: 'English — CCAA Master Level',
-    desc: 'Completed the Master level of the CCAA English program over two semesters, consolidating advanced fluency for academic and professional settings.',
-    accent: false
-  },
-];
-
-/* Work timeline — newest / ongoing first */
-const WORK = [
-  {
-    year: '2026 – Present',
-    title: 'Intern — Network Methodology (Neoenergia)',
-    desc: 'Internship at Neoenergia focused on network methodology, data collection and analysis for grid projects.',
-    accent: true
-  },
-  {
-    year: '2024 – 2026',
-    title: 'Student Representation & Project Lead',
-    desc: 'Elected Student Representative at the College of Electrical Engineering; represented student interests and coordinated institutional initiatives. Appointed project lead at Onda Elétrica, organizing technical teams and roadmaps.',
-    accent: false
-  },
-  {
-    year: '2021 – 2024',
-    title: 'Teaching & Problem Solving',
-    desc: 'Instructor at Cursos Discipulus and MSL — taught mathematics and physics problem-solving to strengthen analytical foundations.',
-    accent: false
-  },
-];
-
-/* Awards — highlighted cards shown above the certificates.
-   Optional `result` (e.g. placement) is shown as a pill when filled in. */
-const AWARDS = [
-  {
-    issuer: 'IEEE SSCS · WPI',
-    title: '2026 IEEE SSCS Arduino Contest',
-    date: 'Nov 2026',
-    result: '2nd Place',
-    project: 'FaceGuard',
-    url: 'https://arduino-contest.sscs.ieee.org/winners',
-    notes: 'Second place in the contest promoted by the IEEE Solid-State Circuits Society, with FaceGuard — a smart lock with on-device facial recognition built on the ESP32-S3.'
-  },
-];
-
-/* Certificates — newest first */
-const CERTIFICATIONS = [
-  {
-    issuer: 'IEEE SSCS · WPI',
-    title: 'Participation in the 2026 IEEE SSCS Arduino Contest',
-    date: 'Aug 2026',
-    notes: 'Participation certificate in the contest promoted by the IEEE Solid-State Circuits Society. Hands-on work in microcontroller programming (Arduino, ESP32).'
-  },
-  {
-    issuer: 'FM2S',
-    title: 'Lean Six Sigma White Belt',
-    date: 'May 2026',
-    notes: 'Applied lean practices to student and industrial projects.'
-  },
-  {
-    issuer: 'MathWorks',
-    title: 'MATLAB & Simulink Onramp',
-    date: 'Apr 2026',
-    notes: 'Fundamentals of MATLAB and Simulink for simulation and modeling.'
-  },
-  {
-    issuer: 'Kaggle',
-    title: 'Python & Data Analysis',
-    date: 'Apr 2026',
-    notes: 'Applied Python for data analysis and SQL for database management.'
-  },
-];
-
-const REPOS = [
-  {
-    name: 'resistor-color-reader',
-    desc: 'MATLAB script decoding resistor color codes (EIA-96 / IEC 60062).',
-    lang: 'MATLAB',
-    langColor: '#e16737',
-    stars: 8
-  },
-  {
-    name: 'bms-kalman-filter',
-    desc: 'EKF-based SoC estimation algorithms.',
-    lang: 'Python',
-    langColor: '#3572A5',
-    stars: 12
-  },
-  {
-    name: 'fourier-signal-reconstruction',
-    desc: 'Harmonic analysis and DSP for signal reconstruction.',
-    lang: 'MATLAB',
-    langColor: '#e16737',
-    stars: 5
-  },
-  {
-    name: 'lab-integrado-4',
-    desc: 'Structured repository with lab practices and reports for Integrated Lab 4.',
-    lang: 'LaTeX',
-    langColor: '#008080',
-    stars: 4
-  },
-];
+/* Escape text before interpolating into HTML */
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
 
 /* ═══════════════════════════════════════
    HERO CANVAS — Particle Circuit
+   Pauses off-screen / hidden tab, handles retina,
+   debounced resize, static frame on reduced motion.
 ═══════════════════════════════════════ */
 (function () {
   const canvas = document.getElementById('hero-canvas');
-  const ctx    = canvas.getContext('2d');
-  let W, H, nodes, animId;
-
-  const NODE_COUNT      = 55;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const hero = document.getElementById('hero');
+  const ACCENT = 'rgba(232,140,48,';
+  const DIM = 'rgba(255,255,255,';
   const CONNECTION_DIST = 160;
-  const ACCENT          = 'rgba(232,140,48,';
-  const DIM             = 'rgba(255,255,255,';
 
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-    init();
+  let W = 0, H = 0, nodes = [], rafId = null, inView = true;
+
+  function nodeCount() { return window.innerWidth < 768 ? 28 : 55; }
+
+  function size() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = hero.clientWidth;
+    H = hero.clientHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
   function init() {
-    nodes = Array.from({ length: NODE_COUNT }, () => ({
-      x:      Math.random() * W,
-      y:      Math.random() * H,
-      vx:     (Math.random() - 0.5) * 0.3,
-      vy:     (Math.random() - 0.5) * 0.3,
-      r:      Math.random() * 1.5 + 0.5,
-      pulse:  Math.random() * Math.PI * 2,
-      accent: Math.random() < 0.12,
+    nodes = Array.from({ length: nodeCount() }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      r: Math.random() * 1.5 + 0.5,
+      pulse: Math.random() * Math.PI * 2,
+      accent: Math.random() < 0.12
     }));
   }
 
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-
-    // Move nodes
+  function step() {
     nodes.forEach(n => {
-      n.x += n.vx;
-      n.y += n.vy;
+      n.x += n.vx; n.y += n.vy;
       if (n.x < 0 || n.x > W) n.vx *= -1;
       if (n.y < 0 || n.y > H) n.vy *= -1;
       n.pulse += 0.02;
     });
+  }
 
-    // Draw connections
+  function render() {
+    ctx.clearRect(0, 0, W, H);
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
-        const a  = nodes[i], b = nodes[j];
+        const a = nodes[i], b = nodes[j];
         const dx = a.x - b.x, dy = a.y - b.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-
         if (dist < CONNECTION_DIST) {
-          const opacity  = (1 - dist / CONNECTION_DIST) * 0.18;
+          const opacity = (1 - dist / CONNECTION_DIST) * 0.18;
           const isAccent = a.accent || b.accent;
           ctx.beginPath();
-          ctx.strokeStyle = isAccent ? ACCENT + opacity + ')' : DIM + opacity + ')';
-          ctx.lineWidth   = isAccent ? 0.8 : 0.5;
+          ctx.strokeStyle = (isAccent ? ACCENT : DIM) + opacity + ')';
+          ctx.lineWidth = isAccent ? 0.8 : 0.5;
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
           ctx.stroke();
         }
       }
     }
-
-    // Draw nodes
     nodes.forEach(n => {
-      const pulse   = Math.sin(n.pulse) * 0.3 + 0.7;
+      const pulse = Math.sin(n.pulse) * 0.3 + 0.7;
       const opacity = n.accent ? 0.7 * pulse : 0.25 * pulse;
       ctx.beginPath();
-      ctx.fillStyle = n.accent ? ACCENT + opacity + ')' : DIM + opacity + ')';
+      ctx.fillStyle = (n.accent ? ACCENT : DIM) + opacity + ')';
       ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
       ctx.fill();
     });
-
-    animId = requestAnimationFrame(draw);
   }
 
-  window.addEventListener('resize', () => { cancelAnimationFrame(animId); resize(); });
-  resize();
-  draw();
+  function loop() {
+    step();
+    render();
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function start() { if (!rafId && !reduceMotion && inView && !document.hidden) loop(); }
+  function stop() { if (rafId) { cancelAnimationFrame(rafId); rafId = null; } }
+
+  size(); init(); render();
+  start();
+
+  let lastW = window.innerWidth, t;
+  window.addEventListener('resize', () => {
+    clearTimeout(t);
+    t = setTimeout(() => {
+      // ignore height-only changes (mobile address bar show/hide)
+      if (window.innerWidth === lastW) return;
+      lastW = window.innerWidth;
+      stop(); size(); init(); render(); start();
+    }, 200);
+  });
+
+  new IntersectionObserver(entries => {
+    inView = entries[0].isIntersecting;
+    inView ? start() : stop();
+  }, { threshold: 0 }).observe(hero);
+
+  document.addEventListener('visibilitychange', () => { document.hidden ? stop() : start(); });
 })();
 
 /* ═══════════════════════════════════════
-   NAV — scroll behaviour
+   NAV — scroll state, mobile menu, scrollspy
 ═══════════════════════════════════════ */
-window.addEventListener('scroll', () => {
-  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
-});
+(function () {
+  const nav = document.getElementById('navbar');
+  const toggle = document.getElementById('nav-toggle');
+  const links = document.getElementById('nav-links');
+
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+
+  function setMenu(open) {
+    nav.classList.toggle('menu-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+  }
+  toggle.addEventListener('click', () => setMenu(!nav.classList.contains('menu-open')));
+  links.addEventListener('click', e => { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+
+  // Scrollspy
+  const map = new Map();
+  document.querySelectorAll('.nav-links a[href^="#"]').forEach(a => {
+    const sec = document.querySelector(a.getAttribute('href'));
+    if (sec) map.set(sec, a);
+  });
+  const spy = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        map.forEach(a => a.classList.remove('active'));
+        map.get(e.target).classList.add('active');
+      }
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  map.forEach((_, sec) => spy.observe(sec));
+})();
 
 /* ═══════════════════════════════════════
    REVEAL ON SCROLL
 ═══════════════════════════════════════ */
-(function () {
-  const els = document.querySelectorAll('.reveal, .timeline-item');
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        if (e.target.classList.contains('reveal')) obs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  els.forEach(el => obs.observe(el));
-})();
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      if (e.target.classList.contains('reveal')) revealObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal, .timeline-item').forEach(el => revealObserver.observe(el));
 
 /* ═══════════════════════════════════════
-   SKILL BARS
+   PROJECT DIAGRAMS — Input → System → Output
+   Built from project.diagram (see data.js)
 ═══════════════════════════════════════ */
-(function () {
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.querySelectorAll('.skill-bar').forEach(bar => {
-          bar.style.width = (parseFloat(bar.style.getPropertyValue('--w')) * 100) + '%';
-          setTimeout(() => bar.classList.add('animated'), 50);
-        });
-      }
-    });
-  }, { threshold: 0.2 });
-  document.querySelectorAll('.skill-category').forEach(c => obs.observe(c));
-})();
-
-/* ═══════════════════════════════════════
-   PROJECT DIAGRAMS — Input → System → Output panels
-   Used both in project cards (small) and modal (large via class)
-═══════════════════════════════════════ */
-
-/* Shared arrow marker snippet — injected once per SVG */
-function _arrowDefs(id) {
+function arrowDefs(id) {
   return `<defs>
-    <marker id="arr-${id}" viewBox="0 0 10 10" refX="8" refY="5"
-      markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M2 2L8 5L2 8" fill="none" stroke="rgba(232,140,48,0.85)"
-        stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <marker id="arr-${id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M2 2L8 5L2 8" fill="none" stroke="rgba(232,140,48,0.85)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
     </marker>
   </defs>`;
 }
 
-/* ── Reusable panel builder ──────────────────────────────────────
-   Each panel: a rounded rect + header label + body lines
-   x, y = top-left; w, h = dimensions
-   label = small ALL-CAPS tag above
-   lines = array of text rows inside
-   variant: 'input' | 'system' | 'output'
-*/
-function _panel(x, y, w, h, label, lines, variant) {
+function panel(x, y, w, h, label, lines, variant, big) {
   const colors = {
-    input:  { bg: 'rgba(255,255,255,0.035)', stroke: 'rgba(255,255,255,0.14)', tag: 'rgba(255,255,255,0.3)',  tagBg: 'rgba(255,255,255,0.06)' },
-    system: { bg: 'rgba(232,140,48,0.07)',   stroke: 'rgba(232,140,48,0.4)',   tag: 'rgba(232,140,48,0.9)',   tagBg: 'rgba(232,140,48,0.12)' },
-    output: { bg: 'rgba(255,255,255,0.025)', stroke: 'rgba(255,255,255,0.12)', tag: 'rgba(255,255,255,0.3)',  tagBg: 'rgba(255,255,255,0.06)' },
+    input:  { bg: 'rgba(255,255,255,0.035)', stroke: 'rgba(255,255,255,0.14)', tag: 'rgba(255,255,255,0.55)', tagBg: 'rgba(255,255,255,0.06)' },
+    system: { bg: 'rgba(232,140,48,0.07)',   stroke: 'rgba(232,140,48,0.4)',   tag: 'rgba(232,140,48,0.95)',  tagBg: 'rgba(232,140,48,0.12)' },
+    output: { bg: 'rgba(255,255,255,0.025)', stroke: 'rgba(255,255,255,0.12)', tag: 'rgba(255,255,255,0.55)', tagBg: 'rgba(255,255,255,0.06)' }
   };
-  const c  = colors[variant] || colors.input;
+  const c = colors[variant];
   const cx = x + w / 2;
-  const tagY = y + 16;
-  const lineSpacing = 16;
-  const firstLineY = tagY + 26;
-
-  const tagW = label.length * 6.5 + 16;
+  const firstLineY = y + 16 + 26;
+  const spacing = big ? 17 : 16;
+  const tagW = label.length * 7 + 18;
   const tagX = cx - tagW / 2;
+  const f1 = big ? 11.5 : 10.5, f2 = big ? 10.5 : 9.5;
 
-  const textRows = lines.map((line, i) => {
-    const isFirst = i === 0;
-    return `<text x="${cx}" y="${firstLineY + i * lineSpacing}"
-      text-anchor="middle" font-family="monospace"
-      font-size="${isFirst ? 10 : 9}"
-      fill="${isFirst ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.38)'}">${line}</text>`;
-  }).join('');
+  const rows = lines.map((line, i) =>
+    `<text x="${cx}" y="${firstLineY + i * spacing}" text-anchor="middle" font-family="monospace"
+      font-size="${i === 0 ? f1 : f2}" fill="${i === 0 ? 'rgba(255,255,255,0.88)' : 'rgba(255,255,255,0.6)'}">${esc(line)}</text>`
+  ).join('');
 
   return `
-    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="7"
-      fill="${c.bg}" stroke="${c.stroke}" stroke-width="0.8"/>
-    <rect x="${tagX}" y="${y - 9}" width="${tagW}" height="18" rx="4"
-      fill="${c.tagBg}" stroke="${c.stroke}" stroke-width="0.6"/>
-    <text x="${cx}" y="${y + 4}" text-anchor="middle"
-      font-family="monospace" font-size="7.5" font-weight="bold"
-      fill="${c.tag}">${label}</text>
-    ${textRows}`;
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="7" fill="${c.bg}" stroke="${c.stroke}" stroke-width="0.8"/>
+    <rect x="${tagX}" y="${y - 9}" width="${tagW}" height="18" rx="4" fill="${c.tagBg}" stroke="${c.stroke}" stroke-width="0.6"/>
+    <text x="${cx}" y="${y + 4}" text-anchor="middle" font-family="monospace" font-size="8.5" font-weight="bold" fill="${c.tag}">${esc(label)}</text>
+    ${rows}`;
 }
 
-/* ── Arrow connector ──────────────────────────────────────────── */
-function _arrow(x1, y, x2, id) {
-  return `<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"
-    stroke="rgba(232,140,48,0.75)" stroke-width="1.2"
-    marker-end="url(#arr-${id})" fill="none"/>`;
+function arrow(x1, y, x2, id) {
+  return `<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="rgba(232,140,48,0.75)" stroke-width="1.2" marker-end="url(#arr-${id})" fill="none"/>`;
 }
 
-/* ── Main diagram renderer ──────────────────────────────────────
-   context: 'card' = compact (fits 320px column)
-            'modal' = full-width, taller, more detail
-*/
-function renderProjectDiagram(p, context = 'card') {
-  const isModal = context === 'modal';
+function renderDiagram(p, context) {
+  const d = p.diagram;
+  if (!d) return '';
+  const id = `${p.id}-${context}`;
+  const label = `${t('d_diagram')}: ${d.in.title} → ${d.sys.title} → ${d.out.title}`;
+  const IN = t('d_input'), SYS = t('d_system'), OUT = t('d_output');
 
-  /* ── BMS / Kalman Filter ─────────────────────────────────── */
-  if (p.id === 'p1') {
-    if (isModal) {
-      return `
-        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">
-          ${_arrowDefs(p.id)}
-          ${_panel(12, 28, 148, 144, 'INPUT', ['Li-Ion Cell', '─────────────', 'V_terminal(t)', 'I_measured(t)', 'T_ambient'], 'input')}
-          ${_panel(196, 28, 168, 144, 'SYSTEM', ['EKF · MATLAB/Python', '─────────────', 'Equiv. circuit model', 'Predict → Measure', 'Covariance update'], 'system')}
-          ${_panel(400, 28, 148, 144, 'OUTPUT', ['SoC Estimate', '─────────────', 'State of Charge %', 'SoH degradation', 'Remaining range'], 'output')}
-          ${_arrow(160, 100, 193, p.id + 'a')} ${_arrow(364, 100, 397, p.id + 'b')}
-        </svg>`;
-    }
-    return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">${_arrowDefs(p.id)}${_panel(4, 30, 82, 108, 'INPUT', ['Li-Ion Cell', 'V / I / Temp'], 'input')}${_panel(109, 30, 82, 108, 'SYSTEM', ['EKF Filter', 'MATLAB/Python'], 'system')}${_panel(214, 30, 82, 108, 'OUTPUT', ['SoC %', 'SoH / Range'], 'output')}${_arrow(86, 84, 106, p.id + 'a')}${_arrow(191, 84, 211, p.id + 'b')}</svg>`;
+  if (context === 'modal') {
+    const body = k => [d[k].title, '─────────────', ...d[k].lines];
+    return `<svg viewBox="0 0 560 200" role="img" aria-label="${esc(label)}" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+      ${arrowDefs(id)}
+      ${panel(12, 28, 148, 144, IN, body('in'), 'input', true)}
+      ${panel(196, 28, 168, 144, SYS, body('sys'), 'system', true)}
+      ${panel(400, 28, 148, 144, OUT, body('out'), 'output', true)}
+      ${arrow(160, 100, 193, id + 'a')} ${arrow(364, 100, 397, id + 'b')}
+    </svg>`;
   }
-
-  /* ── Signal Analyzer ──────────────────────────────────────── */
-  if (p.id === 'p2') {
-    if (isModal) {
-      return `
-        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">
-          ${_arrowDefs(p.id)}
-          ${_panel(12, 28, 148, 144, 'INPUT', ['Raw Waveform', '─────────────', 'Square / sawtooth', 'Sampling rate fs', 'N harmonics'], 'input')}
-          ${_panel(196, 28, 168, 144, 'SYSTEM', ['Fourier · MATLAB', '─────────────', 'Coeff. computation', 'Series truncation', 'Spectral analysis'], 'system')}
-          ${_panel(400, 28, 148, 144, 'OUTPUT', ['Reconstruction', '─────────────', 'f(t) approx. plot', 'MSE error metric', 'Gibbs phenomenon'], 'output')}
-          ${_arrow(160, 100, 193, p.id + 'a')} ${_arrow(364, 100, 397, p.id + 'b')}
-        </svg>`;
-    }
-    return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">${_arrowDefs(p.id)}${_panel(4, 30, 82, 108, 'INPUT', ['Waveform', 'N harmonics'], 'input')}${_panel(109, 30, 82, 108, 'SYSTEM', ['Fourier DSP', 'Coefficients'], 'system')}${_panel(214, 30, 82, 108, 'OUTPUT', ['f(t) plot', 'MSE metric'], 'output')}${_arrow(86, 84, 106, p.id + 'a')}${_arrow(191, 84, 211, p.id + 'b')}</svg>`;
-  }
-
-  /* ── RC Circuit Simulation ────────────────────────────────── */
-  if (p.id === 'p3') {
-    if (isModal) {
-      return `
-        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">
-          ${_arrowDefs(p.id)}
-          ${_panel(12, 28, 148, 144, 'INPUT', ['RC Circuit', '─────────────', 'Step voltage V_in', 'R, C values', 'Initial conditions'], 'input')}
-          ${_panel(196, 28, 168, 144, 'SYSTEM', ['Transient · MATLAB', '─────────────', 'Thévenin equiv.', 'τ = R·C calc.', 'Analytical solution'], 'system')}
-          ${_panel(400, 28, 148, 144, 'OUTPUT', ['Time Response', '─────────────', 'V_C(t) curve', 'I(t) curve', 'Steady-state val.'], 'output')}
-          ${_arrow(160, 100, 193, p.id + 'a')} ${_arrow(364, 100, 397, p.id + 'b')}
-        </svg>`;
-    }
-    return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">${_arrowDefs(p.id)}${_panel(4, 30, 82, 108, 'INPUT', ['RC Circuit', 'V_in / R / C'], 'input')}${_panel(109, 30, 82, 108, 'SYSTEM', ['Transient', 'MATLAB τ=RC'], 'system')}${_panel(214, 30, 82, 108, 'OUTPUT', ['V_C(t) curve', 'Steady-state'], 'output')}${_arrow(86, 84, 106, p.id + 'a')}${_arrow(191, 84, 211, p.id + 'b')}</svg>`;
-  }
-
-  /* ── Resistor Color Reader ────────────────────────────────── */
-  if (p.id === 'p4') {
-    if (isModal) {
-      return `
-        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">
-          ${_arrowDefs(p.id)}
-          ${_panel(12, 28, 148, 144, 'INPUT', ['Color Bands', '─────────────', '4 or 5 band std.', 'Color sequence', 'Tolerance band'], 'input')}
-          ${_panel(196, 28, 168, 144, 'SYSTEM', ['MATLAB Script', '─────────────', 'Array matching', 'Multiplier calc.', 'GUI visualization'], 'system')}
-          ${_panel(400, 28, 148, 144, 'OUTPUT', ['Resistance', '─────────────', 'Ohmic value (Ω)', 'Tolerance range', 'Validation alert'], 'output')}
-          ${_arrow(160, 100, 193, p.id + 'a')} ${_arrow(364, 100, 397, p.id + 'b')}
-        </svg>`;
-    }
-    return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">${_arrowDefs(p.id)}${_panel(4, 30, 82, 108, 'INPUT', ['Color Bands', 'Sequence input'], 'input')}${_panel(109, 30, 82, 108, 'SYSTEM', ['MATLAB', 'Logic Matching'], 'system')}${_panel(214, 30, 82, 108, 'OUTPUT', ['Resistance Ω', 'Tolerance %'], 'output')}${_arrow(86, 84, 106, p.id + 'a')}${_arrow(191, 84, 211, p.id + 'b')}</svg>`;
-  }
-
-  /* ── Light Alert System ───────────────────────────────────── */
-  if (p.id === 'p5') {
-    if (isModal) {
-      return `
-        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">
-          ${_arrowDefs(p.id)}
-          ${_panel(12, 28, 148, 144, 'INPUT', ['LDR Sensor', '─────────────', 'Analog voltage', 'Ambient light', 'Calibration ref.'], 'input')}
-          ${_panel(196, 28, 168, 144, 'SYSTEM', ['Arduino C++', '─────────────', 'ADC conversion', 'Threshold logic', 'I2C management'], 'system')}
-          ${_panel(400, 28, 148, 144, 'OUTPUT', ['Actuators', '─────────────', 'LCD 16x2 Display', 'Piezo Buzzer PWM', 'Real-time alert'], 'output')}
-          ${_arrow(160, 100, 193, p.id + 'a')} ${_arrow(364, 100, 397, p.id + 'b')}
-        </svg>`;
-    }
-    return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">${_arrowDefs(p.id)}${_panel(4, 30, 82, 108, 'INPUT', ['LDR Sensor', 'Analog Light'], 'input')}${_panel(109, 30, 82, 108, 'SYSTEM', ['Arduino C++', 'Threshold Logic'], 'system')}${_panel(214, 30, 82, 108, 'OUTPUT', ['I2C LCD', 'Buzzer PWM'], 'output')}${_arrow(86, 84, 106, p.id + 'a')}${_arrow(191, 84, 211, p.id + 'b')}</svg>`;
-  }
-
-  /* ── GridSense (WIP) ──────────────────────────────────────── */
-  if (p.id === 'p6') {
-    if (isModal) {
-      return `
-        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">
-          ${_arrowDefs(p.id)}
-          ${_panel(12, 28, 148, 144, 'INPUT', ['Grid Data', '─────────────', 'Sensor telemetry', 'Time-series data', 'Power flow status'], 'input')}
-          ${_panel(196, 28, 168, 144, 'SYSTEM', ['Python Pipeline', '─────────────', 'Pandas ingestion', 'Statistical model', 'Anomaly detect.'], 'system')}
-          ${_panel(400, 28, 148, 144, 'OUTPUT', ['Analytics', '─────────────', 'Predictive insight', 'Data vis. plots', 'Grid optimization'], 'output')}
-          ${_arrow(160, 100, 193, p.id + 'a')} ${_arrow(364, 100, 397, p.id + 'b')}
-        </svg>`;
-    }
-    return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">${_arrowDefs(p.id)}${_panel(4, 30, 82, 108, 'INPUT', ['Grid Telemetry', 'Time-series'], 'input')}${_panel(109, 30, 82, 108, 'SYSTEM', ['Python EDA', 'Data Pipeline'], 'system')}${_panel(214, 30, 82, 108, 'OUTPUT', ['Insights', 'Visualizations'], 'output')}${_arrow(86, 84, 106, p.id + 'a')}${_arrow(191, 84, 211, p.id + 'b')}</svg>`;
-  }
-
-  /* ── FaceGuard (ESP32-S3) ────────────────────────────────── */
-  if (p.id === 'p7') {
-    if (isModal) {
-      return `
-        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">
-          ${_arrowDefs(p.id)}
-          ${_panel(12, 28, 148, 144, 'INPUT', ['ESP32-S3 Camera', '─────────────', 'MJPEG stream', 'OV2640 sensor', 'Button / LDR'], 'input')}
-          ${_panel(196, 28, 168, 144, 'SYSTEM', [p.archShort || 'Edge AI', '─────────────', 'On-device recognition', 'Enrollment & DB', 'HTTP API / Dashboard'], 'system')}
-          ${_panel(400, 28, 148, 144, 'OUTPUT', ['Access Control', '─────────────', 'Remote Unlock', 'Access Logs', 'Live Stream'], 'output')}
-          ${_arrow(160, 100, 193, p.id + 'a')} ${_arrow(364, 100, 397, p.id + 'b')}
-        </svg>`;
-    }
-    return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">${_arrowDefs(p.id)}${_panel(4, 30, 82, 108, 'INPUT', ['ESP32 Camera', 'MJPEG'], 'input')}${_panel(109, 30, 82, 108, 'SYSTEM', [p.archShort || 'Edge AI'], 'system')}${_panel(214, 30, 82, 108, 'OUTPUT', ['Unlock', 'Logs'], 'output')}${_arrow(86, 84, 106, p.id + 'a')}${_arrow(191, 84, 211, p.id + 'b')}</svg>`;
-  }
-
-  /* ── Non-Linear DC Motor Simulation ───────────────────────── */
-  if (p.id === 'p8') {
-    if (isModal) {
-      return `
-        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">
-          ${_arrowDefs(p.id)}
-          ${_panel(12, 28, 148, 144, 'INPUT', ['DC Motor + Fan', '─────────────', 'Ra, La, Km, J, Bm', 'Load torque k·ω²', 'Armature voltage Va'], 'input')}
-          ${_panel(196, 28, 168, 144, 'SYSTEM', [p.archShort || 'Linearize & Control', '─────────────', 'Operating point ω0', 'State-space / TF', 'PID pole placement'], 'system')}
-          ${_panel(400, 28, 148, 144, 'OUTPUT', ['Responses', '─────────────', 'Step / ramp / parab.', 'P, PI, PD, PID compare', 'ZOH & aliasing'], 'output')}
-          ${_arrow(160, 100, 193, p.id + 'a')} ${_arrow(364, 100, 397, p.id + 'b')}
-        </svg>`;
-    }
-    return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:1;display:block">${_arrowDefs(p.id)}${_panel(4, 30, 82, 108, 'INPUT', ['DC Motor', 'Fan load k·ω²'], 'input')}${_panel(109, 30, 82, 108, 'SYSTEM', ['Linearization', 'PID design'], 'system')}${_panel(214, 30, 82, 108, 'OUTPUT', ['Step response', 'ZOH / aliasing'], 'output')}${_arrow(86, 84, 106, p.id + 'a')}${_arrow(191, 84, 211, p.id + 'b')}</svg>`;
-  }
-
-  // Default placeholder to avoid printing 'undefined' when no diagram exists
-  return `<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;opacity:0.001;display:block"></svg>`;
+  const c = d.card;
+  return `<svg viewBox="0 0 300 160" role="img" aria-label="${esc(label)}" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+    ${arrowDefs(id)}
+    ${panel(4, 30, 82, 108, IN, c.in, 'input')}
+    ${panel(109, 30, 82, 108, SYS, c.sys, 'system')}
+    ${panel(214, 30, 82, 108, OUT, c.out, 'output')}
+    ${arrow(86, 84, 106, id + 'a')} ${arrow(191, 84, 211, id + 'b')}
+  </svg>`;
 }
 
 /* ═══════════════════════════════════════
-   RENDER PROJECTS & SHOW MORE LOGIC
+   PROJECTS — render, filter, show more
+   build() can be called again (e.g. when the language changes).
 ═══════════════════════════════════════ */
-(function () {
+const INITIAL_VISIBLE = 4;
+const AWARD_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="5"/><path d="M8.5 13.2L7 21l5-3 5 3-1.5-7.8"/></svg>';
+
+let currentProject = null;
+
+const projectsUI = (function () {
   const container = document.getElementById('projects-list');
+  const filterBar = document.getElementById('project-filters');
+  const moreBtn = document.getElementById('show-more-projects');
+  const moreWrap = document.getElementById('projects-action');
 
-  PROJECTS.forEach((p, i) => {
-    p.num = String(i + 1).padStart(3, '0'); // numbering follows display order
-    const card = document.createElement('div');
-    card.className = 'project-card reveal' + (i > 0 ? ' reveal-delay-' + (i % 3) : '');
-    
-    // Oculta projetos a partir do índice 3 inicialmente
-    if (i >= 3) {
-      card.style.display = 'none';
-      card.classList.add('extra-project');
-    }
+  let activeFilter = 'all';
+  let expanded = false;
+  let cards = [];
 
-    card.innerHTML = `
-      <div class="project-card-inner">
-        <div class="project-info">
-          <div class="project-num">${p.num} — ${p.tags[0]}</div>
-          <h3 class="project-title">${p.title}</h3>
-          <p class="project-desc">${p.desc}</p>
-          <div class="project-tags">
-            ${p.tags.map(t => `<span class="project-tag">${t}</span>`).join('')}
+  function build(instant) {
+    container.innerHTML = '';
+    filterBar.innerHTML = '';
+    cards = [];
+
+    PROJECTS.forEach((p, i) => {
+      p.num = String(i + 1).padStart(3, '0');
+      const L = localizeProject(p);
+      const card = document.createElement('article');
+      card.className = 'project-card reveal' + (i > 0 ? ' reveal-delay-' + (i % 3) : '') + (instant ? ' visible' : '');
+      card.dataset.category = p.category;
+      card.innerHTML = `
+        <div class="project-card-inner">
+          <div class="project-info">
+            <div class="project-num">${p.num} — ${esc(p.tags[0])}</div>
+            <h3 class="project-title">${esc(L.title)}</h3>
+            ${L.badge ? `<div class="project-badge">${AWARD_ICON}<span>${esc(L.badge)}</span></div>` : ''}
+            <p class="project-desc">${esc(L.desc)}</p>
+            <div class="project-tags">${p.tags.map(tg => `<span class="project-tag">${esc(tg)}</span>`).join('')}</div>
+            <div class="project-metrics">
+              ${L.metrics.map(m => `<div class="metric"><div class="metric-val${m.val.length > 9 ? ' long' : ''}">${esc(m.val)}</div><div class="metric-label">${esc(m.label)}</div></div>`).join('')}
+            </div>
+            <div class="project-actions">
+              <button type="button" class="project-open" aria-haspopup="dialog" aria-label="${esc(t('view_details'))}: ${esc(L.title)}">${esc(t('view_details'))} <span aria-hidden="true">→</span></button>
+              ${p.repo ? `<a class="project-repo" href="${esc(p.repo)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L.title)} ${esc(t('on_github'))} (${esc(t('new_tab'))})">GitHub <span aria-hidden="true">↗</span></a>` : ''}
+            </div>
           </div>
-          <div class="project-metrics">
-            ${p.metrics.map(m => `
-              <div class="metric">
-                <div class="metric-val">${m.val}</div>
-                <div class="metric-label">${m.label}</div>
-              </div>`).join('')}
-          </div>
-        </div>
-        <div class="project-visual">
-          ${renderProjectDiagram(p)}
-          ${p.repo ? `<a class="project-arrow" href="${p.repo}" target="_blank" rel="noopener">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M3 13L13 3M6 3h7v7"/>
-            </svg>
-          </a>` : `<div class="project-arrow">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M3 13L13 3M6 3h7v7"/>
-            </svg>
-          </div>`}
-        </div>
-      </div>`;
-    card.addEventListener('click', () => openModal(p));
-    container.appendChild(card);
+          ${L.cardImage ? `<div class="project-visual has-photo"><img class="project-photo" src="${esc(L.cardImage.src)}" alt="${esc(L.cardImage.alt)}" loading="lazy"></div>` : ''}
+        </div>`;
+
+      card.addEventListener('click', e => {
+        if (e.target.closest('a')) return; // let links work normally
+        openModal(p, card.querySelector('.project-open'));
+      });
+      p._card = card;
+      container.appendChild(card);
+      cards.push({ p, card });
+    });
+
+    PROJECT_FILTERS.forEach(f => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'filter-chip';
+      b.textContent = localizeFilter(f);
+      b.dataset.filter = f.id;
+      b.setAttribute('aria-pressed', String(f.id === activeFilter));
+      b.addEventListener('click', () => { activeFilter = f.id; apply(true); });
+      filterBar.appendChild(b);
+    });
+
+    apply(false);
+    if (!instant) cards.forEach(({ card }) => { if (!card.hidden) revealObserver.observe(card); });
+  }
+
+  function show(card, animate) {
+    card.hidden = false;
+    if (animate) requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('visible')));
+  }
+
+  function apply(animate) {
+    filterBar.querySelectorAll('.filter-chip').forEach(b =>
+      b.setAttribute('aria-pressed', String(b.dataset.filter === activeFilter)));
+
+    const filtered = activeFilter === 'all';
+    let shownIdx = 0;
+    cards.forEach(({ p, card }) => {
+      const match = filtered || p.category === activeFilter;
+      const within = !filtered || expanded || shownIdx < INITIAL_VISIBLE;
+      if (match) shownIdx++;
+      if (match && within) show(card, animate); else { card.hidden = true; }
+    });
+
+    // "Show more" only applies to the unfiltered view
+    const hiddenCount = PROJECTS.length - INITIAL_VISIBLE;
+    moreWrap.hidden = !filtered || hiddenCount <= 0;
+    moreBtn.setAttribute('aria-expanded', String(expanded));
+    moreBtn.querySelector('.label').textContent = expanded ? t('show_fewer') : t('show_more', hiddenCount);
+    moreBtn.querySelector('svg').style.transform = expanded ? 'rotate(180deg)' : '';
+  }
+
+  moreBtn.addEventListener('click', () => {
+    expanded = !expanded;
+    apply(true);
+    if (!expanded) document.getElementById('projects').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
   });
 
-  // Lógica do botão Show More
-  const btn = document.getElementById('show-more-projects');
-  if (btn) {
-    let isExpanded = false;
-    btn.addEventListener('click', () => {
-      isExpanded = !isExpanded;
-      const extraCards = document.querySelectorAll('.extra-project');
-      
-      extraCards.forEach(card => {
-        if (isExpanded) {
-          card.style.display = 'block';
-          // Pequeno delay para a animação do CSS aplicar corretamente
-          setTimeout(() => card.classList.add('visible'), 50);
-        } else {
-          card.style.display = 'none';
-          card.classList.remove('visible');
-        }
-      });
-      
-      btn.innerHTML = isExpanded
-        ? 'Show less projects <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-left: 0.5rem; width: 14px; height: 14px; vertical-align: middle;"><path d="M12 10L8 6l-4 4"/></svg>'
-        : 'Show more projects <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-left: 0.5rem; width: 14px; height: 14px; vertical-align: middle;"><path d="M4 6l4 4 4-4"/></svg>';
-    });
+  /* Make a project card visible (used when opening a project from the URL) */
+  function reveal(p) {
+    expanded = true; activeFilter = 'all'; apply(false);
+    p._card.classList.add('visible');
   }
 
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-    });
-  }, { threshold: 0.05 });
-  document.querySelectorAll('.project-card:not(.extra-project)').forEach(c => obs.observe(c));
+  build(false);
+  return { build, reveal };
 })();
 
-/* ═══════════════════════════════════════
-   MODAL
-═══════════════════════════════════════ */
-function openModal(p) {
-  const overlay = document.getElementById('modal-overlay');
-  const content = document.getElementById('modal-content');
+/* Open a project directly from the URL: #project/faceguard */
+function openProjectFromHash() {
+  const m = location.hash.match(/^#project\/(.+)$/);
+  if (!m) return;
+  const p = PROJECTS.find(x => x.id === decodeURIComponent(m[1]));
+  if (!p) return;
+  projectsUI.reveal(p);
+  openModal(p, null, true);
+}
 
-  content.innerHTML = `
+/* ═══════════════════════════════════════
+   MODAL — accessible dialog (focus trap, restore focus, hash URL)
+═══════════════════════════════════════ */
+const GITHUB_ICON = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>';
+
+let lastFocus = null;
+function setBackgroundInert(on) {
+  document.querySelectorAll('#navbar, #main, footer, .skip-link').forEach(el => on ? el.setAttribute('inert', '') : el.removeAttribute('inert'));
+}
+
+function renderModalContent(p) {
+  const L = localizeProject(p);
+  return `
     <div class="modal-header">
-      <div style="font-family:monospace;font-size:0.68rem;color:var(--text-dim);margin-bottom:0.5rem;letter-spacing:0.06em">
-        ${p.num} — ${p.tags.join(' · ')}
-      </div>
-      <h2 style="font-size:1.6rem;font-weight:400;letter-spacing:-0.025em;line-height:1.2;padding-right:3rem">
-        ${p.title}
-      </h2>
-      <button class="modal-close" onclick="closeModal()" aria-label="Close">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M4 4l8 8M12 4l-8 8"/>
-        </svg>
+      <div class="modal-kicker">${p.num} — ${p.tags.map(esc).join(' · ')}</div>
+      <h2 id="modal-title" class="modal-title">${esc(L.title)}</h2>
+      ${L.badge ? `<div class="project-badge">${AWARD_ICON}<span>${esc(L.badge)}</span></div>` : ''}
+      <button type="button" class="modal-close" aria-label="${esc(t('close'))}">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
       </button>
     </div>
     <div class="modal-body">
       <div class="modal-metrics">
-        ${p.metrics.map(m => `
-          <div class="modal-metric">
-            <div class="modal-metric-val">${m.val}</div>
-            <div class="modal-metric-label">${m.label}</div>
-          </div>`).join('')}
+        ${L.metrics.map(m => `<div class="modal-metric"><div class="modal-metric-val${m.val.length > 9 ? ' long' : ''}">${esc(m.val)}</div><div class="modal-metric-label">${esc(m.label)}</div></div>`).join('')}
+      </div>
+      ${L.photos ? `<div class="modal-gallery">${L.photos.map(ph => `
+        <figure class="modal-photo${ph.narrow ? ' modal-photo--narrow' : ''}">
+          <img src="${esc(ph.src)}" alt="${esc(ph.alt)}" loading="lazy">
+          ${ph.caption ? `<figcaption>${esc(ph.caption)}</figcaption>` : ''}
+        </figure>`).join('')}</div>` : ''}
+      <div class="modal-section">
+        <div class="modal-section-title">${esc(t('m_summary'))}</div>
+        <p class="modal-text">${esc(L.overview)}</p>
       </div>
       <div class="modal-section">
-        <div class="modal-section-title">Summary</div>
-        <p class="modal-text">${p.overview}</p>
+        <div class="modal-section-title">${esc(t('m_problem'))}</div>
+        <p class="modal-text">${esc(L.problem)}</p>
       </div>
       <div class="modal-section">
-        <div class="modal-section-title">The Problem</div>
-        <p class="modal-text">${p.problem}</p>
-      </div>
-      <div class="modal-section">
-        <div class="modal-section-title">Solution Architecture</div>
-        <div class="modal-arch" style="padding:1.5rem 1rem">
-          ${renderProjectDiagram(p, 'modal')}
-          <p class="modal-text" style="margin-top:1.25rem;font-size:0.82rem">${p.architecture}</p>
+        <div class="modal-section-title">${esc(t('m_arch'))}</div>
+        <div class="modal-arch">
+          ${renderDiagram(L, 'modal')}
+          <p class="modal-text modal-arch-text">${esc(L.architecture)}</p>
         </div>
       </div>
       <div class="modal-section">
-        <div class="modal-section-title">Results</div>
-        <p class="modal-text">${p.results}</p>
+        <div class="modal-section-title">${esc(t('m_results'))}</div>
+        <p class="modal-text">${esc(L.results)}</p>
       </div>
+      ${p.colorTable ? `
+      <div class="modal-section">
+        <div class="modal-section-title">${esc(t('m_colors'))}</div>
+        <table class="color-table">
+          <thead><tr><th scope="col">${esc(t('th_color'))}</th><th scope="col">${esc(t('th_value'))}</th></tr></thead>
+          <tbody>${p.colorTable.map(c => `<tr><td><span class="color-swatch" style="background:${esc(c.hex)}" aria-hidden="true"></span>${esc(c.name)}</td><td>${esc(String(c.value).replace('multiplier/tolerance', t('mult_tol')))}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>` : ''}
+      ${p.video ? `
+      <div class="modal-section">
+        <div class="modal-section-title">${esc(t('m_video'))}</div>
+        <div class="modal-video">
+          <iframe src="https://www.youtube-nocookie.com/embed/${esc(p.video)}" title="${esc(L.title)} — ${esc(t('m_video_title'))}"
+            loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+      </div>` : ''}
       <div class="modal-links">
-        <a href="${p.repo || 'https://github.com/VoIkmer'}" target="_blank" class="modal-link" rel="noopener" aria-label="View repository on GitHub">
-          <svg viewBox="0 0 16 16" fill="currentColor">
-            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-          </svg>
-          View on GitHub
+        <a href="${esc(p.repo || 'https://github.com/VoIkmer')}" target="_blank" class="modal-link" rel="noopener noreferrer">
+          ${GITHUB_ICON} ${esc(t('view_gh'))}
         </a>
-        ${p.id === 'p7' ? `
-        <a href="https://www.youtube.com/watch?v=lPA_LZTQk2s&pp=ygUJZmFjZWd1YXJk" target="_blank" class="modal-link youtube" rel="noopener" aria-label="Watch project video on YouTube">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-            <path d="M23.5 6.2s-.2-1.6-.8-2.3c-.8-.9-1.7-.9-2.1-1-2.9-.2-7.2-.2-7.2-.2s-4.3 0-7.2.2c-.5.1-1.4.1-2.1 1-.6.7-.8 2.3-.8 2.3S2 7.9 2 9.7v2.6c0 1.8.6 3.5.6 3.5s.2 1.6.8 2.3c.8.9 1.8.9 2.3 1 1.7.1 7.1.2 7.1.2s4.3 0 7.2-.2c.5-.1 1.4-.1 2.1-1 .6-.7.8-2.3.8-2.3s.6-1.7.6-3.5V9.7c0-1.8-.6-3.5-.6-3.5zM9.8 15.3V8.7l6.2 3.3-6.2 3.3z"/>
-          </svg>
-          Watch Video
-        </a>
-        ` : ''}
       </div>
     </div>`;
-
-  overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
 }
 
-window.closeModal = function () {
-  document.getElementById('modal-overlay').classList.remove('open');
+function openModal(p, trigger, fromHash) {
+  const overlay = document.getElementById('modal-overlay');
+  const content = document.getElementById('modal-content');
+  lastFocus = trigger || document.activeElement;
+  currentProject = p;
+
+  content.innerHTML = renderModalContent(p);
+
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  setBackgroundInert(true);
+  overlay.scrollTop = 0;
+  if (window.trackEvent) window.trackEvent('project-open: ' + p.id);
+  content.querySelector('.modal-close').focus();
+  if (!fromHash) { try { history.replaceState(null, '', '#project/' + p.id); } catch (e) { /* file:// */ } }
+}
+
+function closeModal() {
+  const overlay = document.getElementById('modal-overlay');
+  if (!overlay.classList.contains('open')) return;
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
-};
+  setBackgroundInert(false);
+  currentProject = null;
+  document.getElementById('modal-content').innerHTML = ''; // also stops the video
+  try { if (location.hash.startsWith('#project/')) history.replaceState(null, '', '#projects'); } catch (e) { /* file:// */ }
+  if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+  lastFocus = null;
+}
 
-document.getElementById('modal-overlay').addEventListener('click', function (e) {
-  if (e.target === this) closeModal();
-});
-
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-/* ═══════════════════════════════════════
-   RENDER TIMELINES (education + work)
-═══════════════════════════════════════ */
 (function () {
-  function renderTimeline(containerId, items) {
-    const tl = document.getElementById(containerId);
-    if (!tl) return;
-    items.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'timeline-item';
-      div.innerHTML = `
-        <div class="timeline-dot${item.accent ? ' accent' : ''}"></div>
-        <div class="timeline-year">${item.year}</div>
-        <div class="timeline-title">${item.title}</div>
-        <div class="timeline-desc">${item.desc}</div>`;
-      tl.appendChild(div);
-    });
-  }
-
-  renderTimeline('education-list', EDUCATION);
-  renderTimeline('work-list', WORK);
-
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.15 });
-  document.querySelectorAll('.timeline-item').forEach(el => obs.observe(el));
+  const overlay = document.getElementById('modal-overlay');
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay || e.target.closest('.modal-close')) closeModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (!overlay.classList.contains('open')) return;
+    if (e.key === 'Escape') { closeModal(); return; }
+    if (e.key === 'Tab') { // focus trap
+      const f = overlay.querySelectorAll('a[href], button, iframe, [tabindex]:not([tabindex="-1"])');
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+  window.addEventListener('hashchange', () => {
+    if (location.hash.startsWith('#project/')) openProjectFromHash();
+    else closeModal();
+  });
+  openProjectFromHash();
 })();
 
 /* ═══════════════════════════════════════
-   RENDER AWARDS & CERTIFICATIONS
+   TIMELINES (education + work)
 ═══════════════════════════════════════ */
-(function () {
+function renderTimelines(instant) {
+  function renderTimeline(containerId, listKey, items) {
+    const tl = document.getElementById(containerId);
+    if (!tl) return;
+    tl.innerHTML = '';
+    items.forEach((raw, i) => {
+      const item = localizeItem(listKey, i, raw);
+      const div = document.createElement('div');
+      div.className = 'timeline-item' + (instant ? ' visible' : '');
+      div.innerHTML = `
+        <div class="timeline-dot${item.accent ? ' accent' : ''}"></div>
+        <div class="timeline-year">${esc(item.year)}</div>
+        <div class="timeline-title">${esc(item.title)}</div>
+        <div class="timeline-desc">${esc(item.desc)}</div>
+        ${item.tags ? `<div class="timeline-tags">${item.tags.map(tg => `<span class="project-tag">${esc(tg)}</span>`).join('')}</div>` : ''}`;
+      tl.appendChild(div);
+      if (!instant) revealObserver.observe(div);
+    });
+  }
+  renderTimeline('education-list', 'education', EDUCATION);
+  renderTimeline('work-list', 'work', WORK);
+}
+renderTimelines(false);
+
+/* ═══════════════════════════════════════
+   AWARDS & CERTIFICATIONS
+═══════════════════════════════════════ */
+function renderAwardsCerts() {
   const awardList = document.getElementById('award-list');
-  AWARDS.forEach(a => {
+  awardList.innerHTML = '';
+  AWARDS.forEach((raw, i) => {
+    const a = localizeItem('awards', i, raw);
     const card = document.createElement('div');
     card.className = 'award-card visible';
     card.innerHTML = `
-      <div class="award-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="9" r="5"/>
-          <path d="M8.5 13.2L7 21l5-3 5 3-1.5-7.8"/>
-        </svg>
-      </div>
+      <div class="award-icon" aria-hidden="true">${AWARD_ICON}</div>
       <div class="award-body">
         <div class="award-top">
-          <span class="blog-cat">${a.issuer}</span>
-          <span class="award-pill">Award</span>
-          ${a.result ? `<span class="award-pill award-pill-result">${a.result}</span>` : ''}
+          <span class="blog-cat">${esc(a.issuer)}</span>
+          <span class="award-pill">${esc(t('award'))}</span>
+          ${a.result ? `<span class="award-pill award-pill-result">${esc(a.result)}</span>` : ''}
         </div>
-        <div class="award-title">${a.title}</div>
-        <div class="blog-excerpt">${a.notes || ''}</div>
+        <div class="award-title">${esc(a.title)}</div>
+        <div class="blog-excerpt">${esc(a.notes || '')}</div>
         <div class="award-foot">
-          <div class="blog-meta">${a.date}</div>
-          ${a.url ? `<a class="award-link" href="${a.url}" target="_blank" rel="noopener">Official winners page ↗</a>` : ''}
+          <div class="blog-meta">${esc(a.date)}</div>
+          ${a.project ? `<a class="award-link" href="#project/${esc(PROJECTS.find(p => p.title.startsWith(a.project))?.id || '')}">${esc(t('see_project'))}</a>` : ''}
+          ${a.url ? `<a class="award-link" href="${esc(a.url)}" target="_blank" rel="noopener noreferrer">${esc(t('winners'))}</a>` : ''}
         </div>
       </div>`;
     awardList.appendChild(card);
   });
 
   const grid = document.getElementById('cert-grid');
-  CERTIFICATIONS.forEach((cert, i) => {
-    const card = document.createElement('div');
-    card.className = 'blog-card' + (i > 1 ? ` reveal-delay-${(i % 2) + 1}` : '');
-    card.innerHTML = `
-      <div class="blog-cat">${cert.issuer}</div>
-      <div class="blog-title">${cert.title}</div>
-      <div class="blog-excerpt">${cert.notes || ''}</div>
-      <div class="blog-meta">${cert.date}</div>`;
-    // Mark visible immediately (dynamic insert happens after observer runs)
-    card.classList.add('visible');
-    grid.appendChild(card);
+  grid.innerHTML = '';
+  CERTIFICATIONS.forEach((raw, i) => {
+    const cert = localizeItem('certs', i, raw);
+    const el = document.createElement(cert.url ? 'a' : 'div');
+    el.className = 'blog-card visible';
+    if (cert.url) { el.href = cert.url; el.target = '_blank'; el.rel = 'noopener noreferrer'; }
+    el.innerHTML = `
+      <div class="blog-cat">${esc(cert.issuer)}</div>
+      <div class="blog-title">${esc(cert.title)}</div>
+      <div class="blog-excerpt">${esc(cert.notes || '')}</div>
+      <div class="blog-meta">${esc(cert.date)}${cert.url ? esc(/linkedin\.com/.test(cert.url) ? t('see_linkedin') : t('verify')) : ''}</div>`;
+    grid.appendChild(el);
+  });
+}
+renderAwardsCerts();
+
+/* ═══════════════════════════════════════
+   CONTACT — copy e-mail
+═══════════════════════════════════════ */
+(function () {
+  const btn = document.getElementById('copy-email');
+  if (!btn) return;
+  const status = document.getElementById('copy-status');
+  btn.addEventListener('click', async () => {
+    const email = btn.dataset.email;
+    try {
+      await navigator.clipboard.writeText(email);
+      status.textContent = t('copied_msg');
+    } catch (e) {
+      status.textContent = t('copy_fail');
+    }
+    btn.classList.add('copied');
+    setTimeout(() => { btn.classList.remove('copied'); status.textContent = ''; }, 2500);
+  });
+})();
+
+/* ═══════════════════════════════════════
+   LANGUAGE SWITCH (EN / PT)
+═══════════════════════════════════════ */
+document.querySelectorAll('.lang-btn').forEach(b => b.addEventListener('click', () => {
+  if (b.dataset.lang !== LANG) setLang(b.dataset.lang);
+}));
+
+window.addEventListener('langchange', () => {
+  projectsUI.build(true);
+  renderTimelines(true);
+  renderAwardsCerts();
+  const overlay = document.getElementById('modal-overlay');
+  if (currentProject && overlay.classList.contains('open')) {
+    const content = document.getElementById('modal-content');
+    const top = overlay.scrollTop;
+    content.innerHTML = renderModalContent(currentProject);
+    overlay.scrollTop = top;
+    content.querySelector('.modal-close').focus();
+  }
+  if (window.trackEvent) window.trackEvent('lang-' + LANG);
+});
+
+setLang(LANG, true); // apply the saved / browser language to the static text
+
+/* ═══════════════════════════════════════
+   ANALYTICS — GoatCounter (privacy-friendly, no cookies).
+   Off unless SITE.goatcounter is set in data.js.
+═══════════════════════════════════════ */
+(function () {
+  if (!SITE.goatcounter) return;
+  const tag = document.createElement('script');
+  tag.async = true;
+  tag.src = 'https://gc.zgo.at/count.js';
+  tag.dataset.goatcounter = `https://${SITE.goatcounter}.goatcounter.com/count`;
+  document.head.appendChild(tag);
+
+  function track(name) {
+    if (window.goatcounter && window.goatcounter.count) {
+      window.goatcounter.count({ path: name, title: name, event: true });
+    }
+  }
+  window.trackEvent = track;
+
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a, button');
+    if (!a) return;
+    if (a.matches('a[download]')) track('cv-download');
+    else if (a.matches('a[href^="mailto:"]')) track('email-click');
+    else if (a.matches('a[href*="linkedin.com"]')) track('linkedin-click');
+    else if (a.matches('a[href^="https://github.com/VoIkmer"]') && !a.matches('.project-repo, .modal-link')) track('github-profile-click');
+    else if (a.matches('.project-repo, .modal-link')) track('repo-click: ' + (a.getAttribute('aria-label') || a.href));
+    else if (a.id === 'copy-email') track('email-copy');
+    else if (a.matches('.lang-btn')) track('lang-click: ' + a.dataset.lang);
   });
 })();
